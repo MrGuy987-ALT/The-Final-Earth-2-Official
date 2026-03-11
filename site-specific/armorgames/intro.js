@@ -1,4 +1,4 @@
-var donePlayingIntro = false;
+var donePlayingIntro = true;
 
 /**
  * Play the Armor Games intro
