@@ -1,17 +1,34 @@
+// === COMPLETE ARMOR GAMES INTRO OVERRIDE ===
 var donePlayingIntro = true;
 
 /**
- * Play the Armor Games intro
- * @param {string} windowHandle the canvas element 
- * @param {string} directory Directory to find the armor games intros in. A / will be automatically added
+ * Fully bypasses the Armor Games intro.
+ * @param {HTMLElement} windowHandle The canvas element (ignored)
+ * @param {Function} onDone Callback to call immediately
  */
 function playArmorGamesIntro(windowHandle, onDone) {
-    // Immediately mark intro as done and call the callback
+    // Mark intro as done
     donePlayingIntro = true;
-    if (onDone) onDone();
+
+    // Safely call the callback
+    try {
+        if (typeof onDone === "function") {
+            onDone();
+        }
+    } catch (e) {
+        console.warn("Intro skip callback error:", e);
+    }
 }
 
-// Optional: keep the resize function to avoid errors if something calls it
-window.resizeArmorGamesIntro = function() {
-    // Nothing to do, intro is skipped
+// Provide a no-op resize function so no other code breaks
+window.resizeArmorGamesIntro = function() {};
+
+// Optional: if the game calls or creates any video elements elsewhere, override them
+HTMLVideoElement.prototype.play = function() {
+    // Immediately resolve as if video finished playing
+    var promise = Promise.resolve();
+    promise.then(() => {
+        if (this.onended) this.onended();
+    });
+    return promise;
 };
